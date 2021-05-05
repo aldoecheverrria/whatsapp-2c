@@ -3,13 +3,44 @@ import { Avatar, IconButton, Button } from '@material-ui/core';
 import ChatIcon from '@material-ui/icons/Chat';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
- 
+import * as EmailValidator  from 'email-validator';
+import { auth, db } from '../firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useCollection } from 'react-firebase-hooks/firestore';
+
 
 function Sidebar() {
+    const [user] = useAuthState(auth);
+    const userChatsRef = db
+      .collection("chats")
+      .where("users", "array-contains", user.email);
+    const [chatsSnapshot, loading] = useCollection(userChatsRef);
+
+
+    const createChat = () => {
+        const input = prompt("Por favor, introduce tu correo electrónico del usuario con quien quieras platicar");
+        if (!input) return null;
+
+
+        if (EmailValidator.validate(input) && !chatAlreadyExist(input) && input !== user.email ){
+            //this is were we need to add the chat into the DB 'chats" collection
+            db.collection('chats').add({
+                users: [user.email, input]
+            });
+        }
+    };
+
+    const chatAlreadyExist = (recipientEmail) => 
+        !!chatsSnapshot?.docs.find(
+            (chat) =>
+                chat.data().users.find((user) => user === recipientEmail)?.length > 0);
+
     return (
         <Container>
             <Header>
-                <UserAvatar/>
+                <UserAvatar
+                onClick={() => auth.signOut()}
+                />
                 <IconsContainer>
                     <IconButton>
                         <ChatIcon/>
@@ -24,8 +55,10 @@ function Sidebar() {
                 <SearchIcon />
                 <SearchInput placeholder="Buscar en chats..."/>
             </Search>
-            <SidebarButton>Iniciar nuevo Chat</SidebarButton>
-            {/*List of chats*/}
+            <SidebarButton
+                onClick={createChat}
+            >Iniciar nuevo Chat</SidebarButton>
+            
         </Container>
     )
 }
