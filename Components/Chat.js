@@ -1,18 +1,28 @@
-import { styled } from 'styled-components';
+import styled from 'styled-components';
 import { Avatar } from '@material-ui/core';
 
 
-function Chat() {
+function Chat({id, users}) {
     return (
         <Container>
             <UserAvatar />
             <p>Recipient Email</p>
         </Container>
-    )
+    );
 }
 
 export default Chat;
 
-const Container = styled.div``;
+const Container = styled.div`
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 15px;
+    word-break: break-word;
 
-const UserAvatar = styled(Avatar)
+    :hover {
+        background-color: #e9eaeb;
+    }
+`;
+
+const UserAvatar = styled(Avatar)``;
