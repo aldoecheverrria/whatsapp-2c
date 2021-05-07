@@ -41,10 +41,11 @@ function Sidebar() {
             <Header>
                 <UserAvatar
                 onClick={() => auth.signOut()}
+                src={user.photoURL}
                 />
                 <IconsContainer>
                     <IconButton>
-                        <ChatIcon/>
+                       <ChatIcon/>
                     </IconButton>
                     <IconButton>
                         <MoreVertIcon/>
@@ -60,11 +61,11 @@ function Sidebar() {
                 onClick={createChat}
             >Iniciar nuevo Chat</SidebarButton>
             {chatsSnapshot?.docs.map((chat) => (
-                <Chat key={chat.id} id={chat.id} user={chat.data().users} />
+                <Chat key={chat.id} id={chat.id} users={chat.data().users} />
             ))}
             
         </Container>
-    )
+    );
 }
 
 export default Sidebar;
