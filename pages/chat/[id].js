@@ -2,8 +2,10 @@ import Head from "next/head";
 import styled from 'styled-components';
 import ChatScreen from "../../components/ChatScreen";
 import Sidebar from "../../Components/Sidebar";
+import { db } from "../../firebase";
 
-function Chat() {
+
+function Chat({chat, messages}) {
     return (
         <Container>
             <Head>
