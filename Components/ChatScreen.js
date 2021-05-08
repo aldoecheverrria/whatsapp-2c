@@ -1,19 +1,62 @@
 import styled from 'styled-components';
 import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../firebase';
+import { auth, db } from '../firebase';
 import { useRouter } from 'next/router';
 import { Avatar, IconButton } from '@material-ui/core';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useCollection } from 'react-firebase-hooks/firestore';
+import Message from './Message';
+import InsertEmoticonIcon from '@material-ui/icons/InsertEmoticon';
+import MicIcon from "@material-ui/icons/Mic"
+import { useState } from 'react';
+import firebase from "firebase";
 
 
 function ChatScreen({chat, Message}) {
 const [user] = useAuthState(auth);
+const [input, setInput] = useState("")
 const router = useRouter();
-const [messagesSnapshot] = useCollection();
+const [messagesSnapshot] = useCollection (
+    db
+      .collection("chats")
+      .doc(router.query.id)
+      .collection("messages")
+      .orderBy("timestamp", "asc")
+);
 
-
+const showMessages = () => {
+    if (messagesSnapshot) {
+        return messagesSnapshot.docs.map((messages) =>(
+        <Message 
+            key={messages.id}
+            user={message.data().user}
+            message={{
+                ...message.data(),
+                timestamp: message.data().timestamp?.toDate().getTime(),
+            }} 
+            
+            />
+        ));
+    }
+};
+    const sendMessage = (e) => {
+        e.preventDefault();
+        //this function updates the last seen
+        db.collection("users").doc(user.uid).set(
+            {
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+            },
+            { merge: true }
+        );
+        db.collection("chats").doc(router.query.id).collection("messages").add({
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+            message: input,
+            user: user.email,
+            photoURL: user.photoURL,
+        });
+        setInput('');
+    };
 
     return (
         <Container>
@@ -33,9 +76,21 @@ const [messagesSnapshot] = useCollection();
             </HeaderIcons>
             </Header>
             <MessageContainer>
-                {/* shot messages*/}
+                {showMessages()}
                 <EndOfMessages />
             </MessageContainer>
+
+            <InputContainer>
+                <InsertEmoticonIcon/>
+                <Input value={input} onChange={e => setInput(e.target.value)}/>
+                <button 
+                    hidden
+                    disable={!input}
+                    type="submit"
+                    onClick={sendMessage}
+                >Enviar mensaje</button>
+                <MicIcon/>
+            </InputContainer>
         </Container>
     )
 }
@@ -43,6 +98,30 @@ const [messagesSnapshot] = useCollection();
 export default ChatScreen;
 
 const Container = styled.div``;
+
+const Input = styled.input`
+    flex: 1;
+    outline: 0;
+    border: none;
+    border-radius: 10px;
+    background-color: whitesmoke;
+    padding: 20px;
+    margin-left: 15px;
+    margin-right: 15px;
+`;
+
+const InputContainer = styled.form`
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    position: sticky;
+    bottom: 0;
+    background-color: white;
+    z-index: 100;
+
+
+`;
+
 
 const Header = styled.div`
 display: flex;
@@ -73,6 +152,13 @@ flex: 1;
 
 const HeaderIcons = styled.div``;
 
-const MessageContainer = styled.div``;
+const MessageContainer = styled.div`
+    padding: 30px;
+    background-color: #e5ded8;
+    min-height: 90vh;
+`;
 
 const EndOfMessages = styled.div``;
+
+
+
