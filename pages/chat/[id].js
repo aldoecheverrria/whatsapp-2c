@@ -13,7 +13,7 @@ function Chat({chat, messages}) {
     return (
         <Container>
             <Head>
-                <title>Chat with {getRecipientEmail(chat.users) }</title>
+                <title>Platica con... {getRecipientEmail(chat.users) }</title>
             </Head>
             
             <Sidebar/>
@@ -26,38 +26,38 @@ function Chat({chat, messages}) {
 
 export default Chat;
 export async function getServerSideProps(context) {
-    const ref = db.collection("chats").doc(context.query.id);
-  
-    // Prep the Messages...
-    const messagesRes = await ref
-      .collection("messages")
-      .orderBy("timestamp", "asc")
-      .get();
-  
-    const messages = messagesRes.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .map((messages) => ({
-        ...messages,
-        timestamp: messages.timestamp.toDate().getTime(),
-      }));
-  
-    // Prep the Chats...
-    const chatRes = await ref.get();
-    const chat = {
-      id: chatRes.id,
-      ...chatRes.data(),
-    };
-  
-    return {
-      props: {
-        messages: JSON.stringify(messages),
-        chat: chat,
-      },
-    };
-  }
+  const ref = db.collection("chats").doc(context.query.id);
+
+  // Prep the Messages...
+  const messagesRes = await ref
+    .collection("messages")
+    .orderBy("timestamp", "asc")
+    .get();
+
+  const messages = messagesRes.docs
+    .map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+    .map((messages) => ({
+      ...messages,
+      timestamp: messages.timestamp.toDate().getTime(),
+    }));
+
+  // Prep the Chats...
+  const chatRes = await ref.get();
+  const chat = {
+    id: chatRes.id,
+    ...chatRes.data(),
+  };
+
+  return {
+    props: {
+      messages: JSON.stringify(messages),
+      chat: chat,
+    },
+  };
+}
 
 const Container = styled.div`
     display: flex;

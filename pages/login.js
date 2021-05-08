@@ -1,6 +1,8 @@
-import { Button } from '@material-ui/core';
-import styled from 'styled-components';
-import { auth } from '../firebase';
+import React from "react";
+import { auth, provider } from "../firebase";
+import styled from "styled-components";
+import { Button } from "@material-ui/core";
+import Head from "next/head";
 
 
 
@@ -33,8 +35,6 @@ const Container = styled.div`
     place-items: center;
     height: 100vh;           
 `; 
-
-const Head = styled.div``;
 
 const LoginContainer = styled.div`
     display: flex;

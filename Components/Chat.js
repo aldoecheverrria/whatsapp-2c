@@ -1,10 +1,11 @@
-import styled from 'styled-components';
-import { Avatar } from '@material-ui/core';
-import getRecipientEmail from '../utils/getRecipientEmail';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth, db } from '../firebase';
-import { useCollection } from 'react-firebase-hooks/firestore';
-import { useRouter } from 'next/router';
+import { Avatar } from "@material-ui/core";
+import { useRouter } from "next/router";
+import React from "react";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
+import styled from "styled-components";
+import { auth, db } from "../firebase";
+import getRecipientEmail from "../utils/getRecipientEmail";
 
 
 function Chat({id, users}) {
@@ -19,20 +20,20 @@ function Chat({id, users}) {
         router.push(`/chat/${id}`);
       };
 
+     
+      
 
-    return (
-        <Container onClick={enterChat} >
-            {recipient ? (
-                <UserAvatar src={recipient?.photoURL} />
-
-            ): (
-                <UserAvatar>{recipientEmail[0]}</UserAvatar>
-            )}
-           
-            <p>Recipient Email</p>
+      return (
+        <Container onClick={enterChat}>
+          {recipient ? (
+            <UserAvatar src={recipient?.photoURL} />
+          ) : (
+            <UserAvatar>{recipientEmail[0]}</UserAvatar>
+          )}
+          <p>{recipientEmail}</p>
         </Container>
-    );
-}
+      );
+    }
 
 export default Chat;
 
@@ -48,4 +49,7 @@ const Container = styled.div`
     }
 `;
 
-const UserAvatar = styled(Avatar)``;
+const UserAvatar = styled(Avatar)`
+  margin: 5px;
+  margin-right: 15px;
+`;
